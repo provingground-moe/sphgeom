@@ -20,6 +20,7 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 #include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
 
 #include <memory>
 
@@ -92,6 +93,8 @@ PYBIND11_MODULE(box3d, mod) {
             (bool (Box3d::*)(Vector3d const &) const) & Box3d::contains);
     cls.def("contains",
             (bool (Box3d::*)(Box3d const &) const) & Box3d::contains);
+    cls.def("contains", py::vectorize((bool (Box3d::*)(double, double, double) const)&Box3d::contains),
+            "x"_a, "y"_a, "z"_a);
     cls.def("isDisjointFrom",
             (bool (Box3d::*)(Vector3d const &) const) & Box3d::isDisjointFrom);
     cls.def("isDisjointFrom",

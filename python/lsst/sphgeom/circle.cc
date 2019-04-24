@@ -20,6 +20,7 @@
  * see <https://www.lsstcorp.org/LegalNotices/>.
  */
 #include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
 
 #include <memory>
 
@@ -85,9 +86,11 @@ PYBIND11_MODULE(circle, mod) {
     cls.def("getOpeningAngle", &Circle::getOpeningAngle);
     cls.def("contains",
             (bool (Circle::*)(Circle const &) const) & Circle::contains);
-    // Rewrap this base class method since there are overloads in this subclass
+    // Rewrap these base class methods since there are overloads in this subclass
     cls.def("contains",
             (bool (Circle::*)(UnitVector3d const &) const) & Circle::contains);
+    cls.def("contains", py::vectorize((bool (Circle::*)(double, double, double) const)&Circle::contains),
+            "x"_a, "y"_a, "z"_a);
 
     cls.def("isDisjointFrom",
             (bool (Circle::*)(UnitVector3d const &) const) &

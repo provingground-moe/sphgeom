@@ -21,6 +21,7 @@
  */
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
+#include "pybind11/numpy.h"
 
 #include <memory>
 
@@ -70,8 +71,12 @@ PYBIND11_MODULE(convexPolygon, mod) {
     cls.def("getCentroid", &ConvexPolygon::getCentroid);
 
     // Note that much of the Region interface has already been wrapped. Here are bits that have not:
+    // (include overloads from Region that would otherwise be shadowed).
     cls.def("contains", py::overload_cast<UnitVector3d const &>(&ConvexPolygon::contains, py::const_));
     cls.def("contains", py::overload_cast<Region const &>(&ConvexPolygon::contains, py::const_));
+    cls.def("contains",
+            py::vectorize((bool (ConvexPolygon::*)(double, double, double) const)&ConvexPolygon::contains),
+            "x"_a, "y"_a, "z"_a);
     cls.def("isDisjointFrom", &ConvexPolygon::isDisjointFrom);
     cls.def("intersects", &ConvexPolygon::intersects);
     cls.def("isWithin", &ConvexPolygon::isWithin);
